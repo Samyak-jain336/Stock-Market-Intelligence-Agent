@@ -1,0 +1,9 @@
+langgraph
+langchain
+langchain-google-genai
+sqlalchemy
+pymysql
+streamlit
+plotly
+pandas
+python-dotenv
