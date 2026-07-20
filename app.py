@@ -5,20 +5,7 @@ import base64
 from agent.graph import build_graph
 import io
 import shutil
-from pydub import AudioSegment
-import pydub.utils
 
-os.environ["PATH"] += os.pathsep + r"C:\Users\samya\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.2-full_build\bin"
-
-FFMPEG_PATH = r"C:\Users\samya\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe"
-FFPROBE_PATH = r"C:\Users\samya\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.2-full_build\bin\ffprobe.exe"
-
-if shutil.which("ffmpeg"):
-    AudioSegment.converter = shutil.which("ffmpeg")
-    AudioSegment.ffprobe = shutil.which("ffprobe")
-elif os.path.exists(FFMPEG_PATH):
-    AudioSegment.converter = FFMPEG_PATH
-    AudioSegment.ffprobe = FFPROBE_PATH
 # Page config
 st.set_page_config(
     page_title="Stock Market Intelligence Agent",
@@ -61,26 +48,36 @@ with col_mic:
         from streamlit_mic_recorder import mic_recorder
         audio = mic_recorder(key="mic", start_prompt="🎙️ Record", stop_prompt="⏹️ Stop", just_once=True)
         if audio and audio.get("bytes"):
-            import speech_recognition as sr
-            # Save audio bytes to a temp WAV file
-            audio_segment = AudioSegment.from_file(io.BytesIO(audio["bytes"]))
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-                audio_segment.export(tmp.name, format="wav")
-                tmp_path = tmp.name
-            recognizer = sr.Recognizer()
-            with sr.AudioFile(tmp_path) as source:
-                audio_data = recognizer.record(source)
             try:
-                transcribed = recognizer.recognize_google(audio_data)
-                st.session_state["question_input"] = transcribed
-                st.info(f"🎤 Transcribed: {transcribed}")
-                st.rerun()
-            except sr.UnknownValueError:
-                st.warning("Could not transcribe. Please type your question.")
-            except sr.RequestError:
-                st.warning("Could not transcribe. Please type your question.")
-            finally:
-                os.unlink(tmp_path)
+                from pydub import AudioSegment
+                import speech_recognition as sr
+
+                # Configure pydub ffmpeg paths if available
+                if shutil.which("ffmpeg"):
+                    AudioSegment.converter = shutil.which("ffmpeg")
+                    AudioSegment.ffprobe = shutil.which("ffprobe")
+
+                # Convert audio bytes to WAV via pydub
+                audio_segment = AudioSegment.from_file(io.BytesIO(audio["bytes"]))
+                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                    audio_segment.export(tmp.name, format="wav")
+                    tmp_path = tmp.name
+                recognizer = sr.Recognizer()
+                with sr.AudioFile(tmp_path) as source:
+                    audio_data = recognizer.record(source)
+                try:
+                    transcribed = recognizer.recognize_google(audio_data)
+                    st.session_state["question_input"] = transcribed
+                    st.info(f"🎤 Transcribed: {transcribed}")
+                    st.rerun()
+                except sr.UnknownValueError:
+                    st.warning("Could not transcribe. Please type your question.")
+                except sr.RequestError:
+                    st.warning("Could not transcribe. Please type your question.")
+                finally:
+                    os.unlink(tmp_path)
+            except Exception:
+                st.warning("Voice input is not supported in this environment. Please type your question.")
     except ImportError:
         st.info("Install `streamlit-mic-recorder` and `SpeechRecognition` for voice input.")
 
