@@ -206,13 +206,14 @@ def execute_sql(state):
         state["results"] = pd.DataFrame(rows, columns=columns)
         state["execution_error"] = None
     except Exception as e:
+        print(f"SQL EXECUTION ERROR: {str(e)}")
         state["results"] = None
         state["execution_error"] = str(e)
     return state
-
 # 5. validate_results
 def validate_results(state):
     df = state.get("results", None)
+    print(f"VALIDATE RESULTS: df={df}, execution_error={state.get('execution_error')}")
     if df is None or (isinstance(df, pd.DataFrame) and df.empty):
         state["valid_results"] = False
         state["insight"] = "The query returned no results. Please try rephrasing your question or asking for a different sector/stock."
