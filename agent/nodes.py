@@ -8,16 +8,29 @@ from agent.prompts import SQL_GENERATION_PROMPT, INSIGHT_PROMPT
 import streamlit as st
 
 
-# Load environment variables
-load_dotenv()
+#load_dotenv()
 
 os.environ["LANGCHAIN_TRACING_V2"] = os.getenv("LANGCHAIN_TRACING_V2", "false")
 os.environ["LANGCHAIN_ENDPOINT"] = os.getenv("LANGCHAIN_ENDPOINT", "")
 os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY", "")
 os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT", "")
 
-# Initialize ChatGoogleGenerativeAI
-google_api_key = os.getenv("GOOGLE_API_KEY") or st.secrets.get("GOOGLE_API_KEY", "")
+try:
+    import streamlit as st
+    google_api_key = (
+        os.getenv("GOOGLE_API_KEY") or
+        st.secrets.get("GOOGLE_API_KEY", "") or
+        ""
+    )
+    if not google_api_key:
+        for key in ["GOOGLE_API_KEY", "google_api_key"]:
+            try:
+                google_api_key = st.secrets[key]
+                break
+            except:
+                pass
+except Exception:
+    google_api_key = os.getenv("GOOGLE_API_KEY", "")
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
