@@ -20,7 +20,7 @@ try:
     st.sidebar.write(f"GOOGLE KEY: {'YES' if google_key and google_key != 'NOT FOUND' else 'NO'}")
 except Exception as e:
     st.sidebar.write(f"Secrets error: {str(e)}")
-    
+
 # Header
 st.title("📈 Stock Market Intelligence Agent")
 st.caption("Ask any question about Nifty 50 stocks (2007–2021) in English, Hindi, or Hinglish")
@@ -103,6 +103,8 @@ if analyse_clicked:
         sql = result.get("sql")
         results_df = result.get("results")
         audio_bytes = result.get("audio_bytes")
+        st.sidebar.write(f"Audio bytes: {audio_bytes is not None}")
+        st.sidebar.write(f"Language: {result.get('language')}")
 
         # 1. Insight box (full width)
         warning_phrases = [
