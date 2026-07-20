@@ -13,6 +13,14 @@ st.set_page_config(
     page_icon="📈"
 )
 
+try:
+    db_url = st.secrets.get("DATABASE_URL", "NOT FOUND")
+    st.sidebar.write(f"DB URL: {'YES' if db_url and db_url != 'NOT FOUND' else 'NO - ' + str(db_url)}")
+    google_key = st.secrets.get("GOOGLE_API_KEY", "NOT FOUND")
+    st.sidebar.write(f"GOOGLE KEY: {'YES' if google_key and google_key != 'NOT FOUND' else 'NO'}")
+except Exception as e:
+    st.sidebar.write(f"Secrets error: {str(e)}")
+    
 # Header
 st.title("📈 Stock Market Intelligence Agent")
 st.caption("Ask any question about Nifty 50 stocks (2007–2021) in English, Hindi, or Hinglish")
