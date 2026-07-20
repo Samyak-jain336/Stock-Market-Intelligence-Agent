@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from db import run_query
 from agent.prompts import SQL_GENERATION_PROMPT, INSIGHT_PROMPT
+import streamlit as st
+
 
 # Load environment variables
 load_dotenv()
@@ -15,11 +17,12 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY", "")
 os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT", "")
 
 # Initialize ChatGoogleGenerativeAI
+google_api_key = os.getenv("GOOGLE_API_KEY") or st.secrets.get("GOOGLE_API_KEY", "")
+
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key=google_api_key
 )
-
 def clean_sql(sql_str):
     # Remove markdown code block wraps (e.g. ```sql ... ``` or ``` ... ```)
     sql_str = re.sub(r"```sql\s*", "", sql_str, flags=re.IGNORECASE)
