@@ -7,3 +7,5 @@ streamlit
 plotly
 pandas
 python-dotenv
+streamlit-mic-recorder
+SpeechRecognition
