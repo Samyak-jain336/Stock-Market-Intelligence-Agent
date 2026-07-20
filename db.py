@@ -2,10 +2,12 @@ import os
 from sqlalchemy import create_engine, text
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 
-password = quote_plus(os.getenv('DB_PASSWORD'))
+db_password = os.getenv('DB_PASSWORD') or st.secrets.get('DB_PASSWORD', '')
+password = quote_plus(db_password)
 
 engine = create_engine(
     f"mysql+pymysql://{os.getenv('DB_USER')}:{password}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
