@@ -57,8 +57,8 @@ with col_mic:
                 st.session_state["question_input"] = transcribed
                 st.info(f"🎤 Transcribed: {transcribed}")
                 st.rerun()
-            except Exception:
-                st.warning("Could not transcribe. Please type your question.")
+            except Exception as e:
+                st.warning(f"Could not transcribe: {str(e)}")
     except ImportError:
         st.info("Install `streamlit-mic-recorder` and `groq` for voice input.")
 
