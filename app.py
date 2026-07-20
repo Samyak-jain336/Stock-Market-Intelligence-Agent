@@ -110,7 +110,7 @@ if analyse_clicked:
         insight = result.get("insight", "")
         sql = result.get("sql")
         results_df = result.get("results")
-        audio_path = result.get("audio_path")
+        audio_bytes = result.get("audio_bytes")
 
         # 1. Insight box (full width)
         warning_phrases = [
@@ -139,9 +139,7 @@ if analyse_clicked:
                 st.code(sql, language="sql")
 
         # 3. Audio player (full width)
-        if audio_path is not None and os.path.exists(audio_path):
-            with open(audio_path, "rb") as f:
-                audio_bytes = f.read()
+        if audio_bytes is not None:
             st.audio(audio_bytes, format="audio/mp3")
             st.caption("🔊 Insight read aloud")
 

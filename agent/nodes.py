@@ -253,7 +253,7 @@ def translate_output(state):
 # 6.6. text_to_speech
 def text_to_speech(state):
     from gtts import gTTS
-    import uuid
+    from io import BytesIO
     
     insight = state.get("insight", "")
     language = state.get("language", "ENGLISH")
@@ -266,6 +266,7 @@ def text_to_speech(state):
     ]
     if not insight or any(phrase in insight for phrase in skip_phrases):
         state["audio_path"] = None
+        state["audio_bytes"] = None
         return state
         
     lang_code = "en"
@@ -273,18 +274,16 @@ def text_to_speech(state):
         lang_code = "hi"
         
     try:
-        audio_dir = "static"
-        if not os.path.exists(audio_dir):
-            os.makedirs(audio_dir)
-            
-        filename = os.path.join(audio_dir, f"insight_{uuid.uuid4().hex}.mp3")
+        buffer = BytesIO()
         tts = gTTS(text=insight, lang=lang_code)
-        tts.save(filename)
-        state["audio_path"] = filename
+        tts.write_to_fp(buffer)
+        buffer.seek(0)
+        state["audio_bytes"] = buffer.read()
     except Exception as e:
         print(f"TTS error: {e}")
-        state["audio_path"] = None
+        state["audio_bytes"] = None
         
+    state["audio_path"] = None
     return state
 
 # 7. handle_error
