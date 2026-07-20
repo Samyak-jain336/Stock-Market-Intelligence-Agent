@@ -1,9 +1,5 @@
 # 📈 Stock Market Intelligence Agent
 
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![LangGraph](https://img.shields.io/badge/LangGraph-Agent-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-8E75B2?style=for-the-badge&logo=google&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 
 A **LangGraph multi-agent system** that converts natural language questions about Nifty 50 stocks into data-driven business insights — with multilingual support for **English**, **Hindi**, and **Hinglish**.
 
@@ -167,8 +163,6 @@ Stock-Market-Intelligence-Agent/
 │   ├── graph.py             # LangGraph state machine & routing logic
 │   ├── nodes.py             # 10 agent nodes (detect, translate, validate, SQL, insight, TTS)
 │   └── prompts.py           # Prompt templates (schema context, SQL generation, insight)
-│
-├── Nifty 50 (2007 - 2021)/  # Raw CSV dataset files
 │
 ├── app.py                   # Streamlit frontend
 ├── db.py                    # Database connection & query execution

@@ -8,7 +8,7 @@ load_dotenv()
 password = quote_plus(os.getenv('DB_PASSWORD'))
 
 engine = create_engine(
-    f"mysql+pymysql://{os.getenv('DB_USER')}:{password}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+    f"mysql+pymysql://{os.getenv('DB_USER')}:{password}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME')}"
 )
 
 def run_query(sql):
