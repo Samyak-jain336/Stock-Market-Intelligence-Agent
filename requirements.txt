@@ -10,3 +10,4 @@ python-dotenv
 streamlit-mic-recorder
 SpeechRecognition
 groq
+gtts
