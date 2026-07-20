@@ -38,7 +38,7 @@ with st.sidebar:
 if "question_input" not in st.session_state:
     st.session_state["question_input"] = ""
 
-text_input = st.text_input("", placeholder="Type your question here...", value=st.session_state["question_input"])
+text_input = st.text_input("Question", placeholder="Type your question here...", value=st.session_state["question_input"], label_visibility="collapsed")
 question = text_input
 
 col_mic, col_btn = st.columns([3, 1])
