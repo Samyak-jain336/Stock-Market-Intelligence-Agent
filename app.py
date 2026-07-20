@@ -1,10 +1,7 @@
 import streamlit as st
 import os
-import tempfile
 import base64
 from agent.graph import build_graph
-import io
-import shutil
 
 # Page config
 st.set_page_config(
@@ -49,37 +46,21 @@ with col_mic:
         audio = mic_recorder(key="mic", start_prompt="🎙️ Record", stop_prompt="⏹️ Stop", just_once=True)
         if audio and audio.get("bytes"):
             try:
-                from pydub import AudioSegment
-                import speech_recognition as sr
-
-                # Configure pydub ffmpeg paths if available
-                if shutil.which("ffmpeg"):
-                    AudioSegment.converter = shutil.which("ffmpeg")
-                    AudioSegment.ffprobe = shutil.which("ffprobe")
-
-                # Convert audio bytes to WAV via pydub
-                audio_segment = AudioSegment.from_file(io.BytesIO(audio["bytes"]))
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-                    audio_segment.export(tmp.name, format="wav")
-                    tmp_path = tmp.name
-                recognizer = sr.Recognizer()
-                with sr.AudioFile(tmp_path) as source:
-                    audio_data = recognizer.record(source)
-                try:
-                    transcribed = recognizer.recognize_google(audio_data)
-                    st.session_state["question_input"] = transcribed
-                    st.info(f"🎤 Transcribed: {transcribed}")
-                    st.rerun()
-                except sr.UnknownValueError:
-                    st.warning("Could not transcribe. Please type your question.")
-                except sr.RequestError:
-                    st.warning("Could not transcribe. Please type your question.")
-                finally:
-                    os.unlink(tmp_path)
+                from groq import Groq
+                groq_api_key = os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY", "")
+                client = Groq(api_key=groq_api_key)
+                transcribed = client.audio.transcriptions.create(
+                    file=("audio.webm", audio["bytes"]),
+                    model="whisper-large-v3",
+                    response_format="text"
+                )
+                st.session_state["question_input"] = transcribed
+                st.info(f"🎤 Transcribed: {transcribed}")
+                st.rerun()
             except Exception:
-                st.warning("Voice input is not supported in this environment. Please type your question.")
+                st.warning("Could not transcribe. Please type your question.")
     except ImportError:
-        st.info("Install `streamlit-mic-recorder` and `SpeechRecognition` for voice input.")
+        st.info("Install `streamlit-mic-recorder` and `groq` for voice input.")
 
 with col_btn:
     analyse_clicked = st.button("🔍 Analyse", use_container_width=True)
