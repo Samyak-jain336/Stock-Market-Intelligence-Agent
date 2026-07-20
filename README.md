@@ -7,7 +7,7 @@ A **LangGraph multi-agent system** that converts natural language questions abou
 
 ## 🎬 Demo
 
-![Demo](demo.gif)
+![Demo](demo.png)
 
 ---
 
@@ -26,7 +26,6 @@ A **LangGraph multi-agent system** that converts natural language questions abou
 ## 🏗️ Architecture
 
 The agent processes each question through a **10-node stateful pipeline** built with LangGraph:
-## 🏗️ Architecture
 
 ```mermaid
 flowchart TD
@@ -174,16 +173,6 @@ Stock-Market-Intelligence-Agent/
 └── README.md                # This file
 ```
 
----
 
-## 🙏 Acknowledgements
 
-- **Dataset** — [Nifty 50 Stock Market Data (2007–2021)](https://www.kaggle.com/datasets/rohanrao/nifty50-stock-market-data) on Kaggle
-- **Agent Framework** — [LangGraph](https://github.com/langchain-ai/langgraph) by LangChain
-- **LLM** — [Google Gemini](https://ai.google.dev/) 2.5 Flash
 
----
-
-<p align="center">
-  Built with ❤️ using LangGraph + Gemini
-</p>
