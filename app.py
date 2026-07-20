@@ -13,13 +13,6 @@ st.set_page_config(
     page_icon="📈"
 )
 
-try:
-    db_url = st.secrets.get("DATABASE_URL", "NOT FOUND")
-    st.sidebar.write(f"DB URL: {'YES' if db_url and db_url != 'NOT FOUND' else 'NO - ' + str(db_url)}")
-    google_key = st.secrets.get("GOOGLE_API_KEY", "NOT FOUND")
-    st.sidebar.write(f"GOOGLE KEY: {'YES' if google_key and google_key != 'NOT FOUND' else 'NO'}")
-except Exception as e:
-    st.sidebar.write(f"Secrets error: {str(e)}")
 
 # Header
 st.title("📈 Stock Market Intelligence Agent")
@@ -93,7 +86,6 @@ if analyse_clicked:
                 "execution_error": None,
                 "valid_results": None,
                 "insight": None,
-                "audio_path": None,
                 "attempts": 0,
                 "language": None
             })
@@ -102,9 +94,6 @@ if analyse_clicked:
         insight = result.get("insight", "")
         sql = result.get("sql")
         results_df = result.get("results")
-        audio_bytes = result.get("audio_bytes")
-        st.sidebar.write(f"Audio bytes: {audio_bytes is not None}")
-        st.sidebar.write(f"Language: {result.get('language')}")
 
         # 1. Insight box (full width)
         warning_phrases = [
@@ -132,10 +121,5 @@ if analyse_clicked:
                 st.subheader("🛢️ SQL Generated")
                 st.code(sql, language="sql")
 
-        # 3. Audio player (full width)
-        if audio_bytes is not None:
-            st.audio(audio_bytes, format="audio/mp3")
-            st.caption("🔊 Insight read aloud")
-
-        # 4. Divider
+        # 3. Divider
         st.divider()

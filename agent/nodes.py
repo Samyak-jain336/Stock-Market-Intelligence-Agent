@@ -206,14 +206,12 @@ def execute_sql(state):
         state["results"] = pd.DataFrame(rows, columns=columns)
         state["execution_error"] = None
     except Exception as e:
-        print(f"SQL EXECUTION ERROR: {str(e)}")
         state["results"] = None
         state["execution_error"] = str(e)
     return state
 # 5. validate_results
 def validate_results(state):
     df = state.get("results", None)
-    print(f"VALIDATE RESULTS: df={df}, execution_error={state.get('execution_error')}")
     if df is None or (isinstance(df, pd.DataFrame) and df.empty):
         state["valid_results"] = False
         state["insight"] = "The query returned no results. Please try rephrasing your question or asking for a different sector/stock."
@@ -230,74 +228,6 @@ def write_insight(state):
     prompt = INSIGHT_PROMPT.format(question=question, data=results_str)
     response = llm.invoke(prompt).content.strip()
     state["insight"] = response
-    return state
-
-# 6.5. translate_output
-def translate_output(state):
-    insight = state.get("insight", "")
-    language = state.get("language", "ENGLISH")
-    
-    if language == "ENGLISH":
-        return state
-        
-    if language == "HINDI":
-        prompt = (
-            "You are a translation assistant.\n"
-            "Translate the business insight wrapped in the <insight> XML tags below into natural, professional Hindi.\n"
-            "Keep all numbers (like percentages, dates, values) and stock names (like company names, symbols) unchanged in English characters or digits.\n"
-            "Return only the translated Hindi text with absolutely no explanation or labels.\n\n"
-            f"<insight>{insight}</insight>"
-        )
-        response = llm.invoke(prompt).content.strip()
-        state["insight"] = response
-        
-    elif language == "HINGLISH":
-        prompt = (
-            "You are a translator/rewriter assistant.\n"
-            "Rewrite the business insight wrapped in the <insight> XML tags below in Hinglish — a casual, natural mix of Hindi and English written in the Roman script (as spoken/written by urban Indians online).\n"
-            "Keep all numbers (like percentages, dates, values) and stock names (like company names, symbols) unchanged.\n"
-            "Return only the rewritten Hinglish text with absolutely no explanation or labels.\n\n"
-            f"<insight>{insight}</insight>"
-        )
-        response = llm.invoke(prompt).content.strip()
-        state["insight"] = response
-        
-    return state
-
-# 6.6. text_to_speech
-def text_to_speech(state):
-    from gtts import gTTS
-    from io import BytesIO
-    
-    insight = state.get("insight", "")
-    language = state.get("language", "ENGLISH")
-    
-    skip_phrases = [
-    "Unable to answer",
-    "I can only answer",
-    "Invalid input detected",
-    "I am sorry"
-    ]
-    if not insight or any(phrase in insight for phrase in skip_phrases):
-        state["audio_path"] = None
-        state["audio_bytes"] = None
-        return state
-        
-    lang_code = "en"
-    if language in ["HINDI", "HINGLISH"]:
-        lang_code = "hi"
-        
-    try:
-        buffer = BytesIO()
-        tts = gTTS(text=insight, lang=lang_code)
-        tts.write_to_fp(buffer)
-        buffer.seek(0)
-        state["audio_bytes"] = buffer.read()
-    except Exception as e:
-        print(f"TTS error: {e}")
-        state["audio_bytes"] = None
-        
-    state["audio_path"] = None
     return state
 
 # 7. handle_error

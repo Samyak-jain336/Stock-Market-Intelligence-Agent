@@ -12,8 +12,6 @@ from agent.nodes import (
     execute_sql,
     validate_results,
     write_insight,
-    translate_output,
-    text_to_speech,
     handle_error
 )
 
@@ -30,7 +28,6 @@ class AgentState(TypedDict):
     insight: Optional[str]
     attempts: int
     language: Optional[str]
-    audio_path: Optional[str]
 
 # Routing functions
 def route_validate_question(state: AgentState) -> str:
@@ -77,8 +74,6 @@ def build_graph():
     workflow.add_node("execute_sql", execute_sql)
     workflow.add_node("validate_results", validate_results)
     workflow.add_node("write_insight", write_insight)
-    workflow.add_node("translate_output", translate_output)
-    workflow.add_node("text_to_speech", text_to_speech)
     workflow.add_node("handle_error", handle_error)
 
     # Set entry point
@@ -130,10 +125,8 @@ def build_graph():
         }
     )
 
-    # Final normal edges
-    workflow.add_edge("write_insight", "translate_output")
-    workflow.add_edge("translate_output", "text_to_speech")
-    workflow.add_edge("text_to_speech", END)
+    # Final normal edges to END
+    workflow.add_edge("write_insight", END)
     workflow.add_edge("handle_error", END)
 
     # Compile the graph
